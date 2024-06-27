@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Capture Component</title>
+    <script src="/src/image-capture.js" defer></script>
+    <style>
+        .thumbnails {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .thumbnail {
+            position: relative;
+            display: inline-block;
+        }
+        .thumbnail img {
+            max-width: 200px;
+            max-height: 200px;
+        }
+        .thumbnail .delete-btn,
+        .thumbnail .download-btn {
+            position: absolute;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 12px;
+        }
+        .thumbnail .delete-btn {
+            right: 5px;
+        }
+        .thumbnail .download-btn {
+            left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <image-capture></image-capture>
+    <div class="thumbnails" id="thumbnails"></div>
+    <script>
+        const imageCaptureElement = document.querySelector('image-capture');
+        const thumbnailsContainer = document.getElementById('thumbnails');
+
+        function createThumbnail(imageDataUrl) {
+            const thumbnail = document.createElement('div');
+            thumbnail.classList.add('thumbnail');
+            thumbnail.innerHTML = `
+                <img src="${imageDataUrl}">
+                <button class="delete-btn">Delete</button>
+                <button class="download-btn">Download</button>
+            `;
+            thumbnailsContainer.appendChild(thumbnail);
+
+            thumbnail.querySelector('.delete-btn').addEventListener('click', () => {
+                thumbnailsContainer.removeChild(thumbnail);
+            });
+
+            thumbnail.querySelector('.download-btn').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = imageDataUrl;
+                link.download = 'captured-image.png';
+                link.click();
+            });
+        }
+
+        imageCaptureElement.addEventListener('imagecaptured', (event) => {
+            const { imageDataUrl } = event.detail;
+            createThumbnail(imageDataUrl);
+        });
+    </script>
+</body>
+</html>
